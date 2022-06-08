@@ -4,6 +4,15 @@
  pip install django-sql-utils
  pip install mysqlclient
  pip install django-debug-toolbar
+ 
+ pip install pre-commit
+ 
+ $ pre-commit --version
+ pre-commit 2.19.0
+ 
+ $ pre-commit install
+ pre-commit installed at .git/hooks/pre-commit
+
  ```
 
  - Migrate:
