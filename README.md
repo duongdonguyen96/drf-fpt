@@ -5,48 +5,48 @@
  pip install mysqlclient
  pip install django-debug-toolbar
  ```
- 
+
  - Migrate:
- 
+
  ```
  python manage.py makemigrations
  python manage.py migrate
  ```
- 
+
  - Runserver:
  ```
  python manage.py runserver
- 
+
  ```
 - Cấu trúc Project
 
 ```
 ├── api
 │   └── v1
-│      ├── albums    
-│      ├── singers  
-│      ├── songs    
+│      ├── albums
+│      ├── singers
+│      ├── songs
 │      └── example
-│            ├── seriazalers         
-│            ├── urls        
-│            └── views 
+│            ├── seriazalers
+│            ├── urls
+│            └── views
 │
-├── core  
-│   ├── albums   
+├── core
+│   ├── albums
 │   ├── singer
 │   ├── songs
 │   │   ├── views
-│   │   └── views  
-│   ├── base model 
+│   │   └── views
+│   ├── base model
 │   └──  migrations
-│   
 │
-│  
-├── drf-fpt  
-│   ├── asgy.py         
-│   ├── setting.py         
-│   ├── urls.py        
+│
+│
+├── drf-fpt
+│   ├── asgy.py
+│   ├── setting.py
+│   ├── urls.py
 │   └── wsgi.py
 ├── function         // các hàm dùng chung
-└──requirement      // các thư viện  
+└──requirement      // các thư viện
 ```
