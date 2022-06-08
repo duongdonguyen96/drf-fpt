@@ -1,41 +1,79 @@
-repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.3.0
-    hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
-
--   repo: https://github.com/psf/black
-    rev: 21.12b0
-    hooks:
-    -   id: black
-        additional_dependencies: ['click==8.0.4']
-
-#exclude: 'requirements|docs|node_modules|migrations|.git|.tox|.pre-commit-config.yaml|root_local.py.yml|database.py.yml'
-#default_stages: [commit]
-#fail_fast: true
 #repos:
-#  - repo: https://github.com/pre-commit/pre-commit-hooks
-#    rev: v3.4.0
+#-   repo: https://github.com/pre-commit/pre-commit-hooks
+#    rev: v2.3.0
 #    hooks:
-#      - id: trailing-whitespace
-#      - id: end-of-file-fixer
-#      - id: check-yaml
-#      - id: check-ast
-#      - id: no-commit-to-branch
-#        args: [--branch,'develop-deploy']
+#    -   id: check-yaml
+#    -   id: end-of-file-fixer
+#    -   id: trailing-whitespace
 #
-#  - repo: https://github.com/timothycrosley/isort
-#    rev: 5.8.0
+#-   repo: https://github.com/psf/black
+#    rev: 21.12b0
 #    hooks:
-#      - id: isort
-#        name: isort (python)
-#        args: ['--settings-file=setup.cfg']
-#
-#  - repo: https://gitlab.com/pycqa/flake8
-#    rev: 3.9.0
-#    hooks:
-#      - id: flake8
-#        args: ['--config=setup.cfg']
+#    -   id: black
 #        additional_dependencies: ['click==8.0.4']
+#
+
+repos:
+  - repo: https://github.com/pre-commit/mirrors-yapf.git
+    rev: v0.16.0
+    hooks:
+      - id: yapf
+        files: \.py$
+        exclude: (?=third_party).*(\.py)$
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: a11d9314b22d8f8c7556443875b731ef05965464
+    hooks:
+      - id: check-merge-conflict
+      - id: check-symlinks
+      - id: detect-private-key
+        files: (?!.*paddle)^.*$
+      - id: end-of-file-fixer
+        files: \.md$
+      #-   id: trailing-whitespace
+      #    files: \.md$
+      - id: requirements-txt-fixer
+        exclude: (?=third_party).*$
+      - id: check-yaml
+      - id: check-json
+      - id: pretty-format-json
+        args:
+          - --no-sort-keys
+          - --autofix
+      - id: check-merge-conflict
+      - id: flake8
+        aergs:
+          - --ignore=E501,E228,E226,E261,E266,E128,E402,W503
+          - --builtins=G,request
+          - --jobs=1
+        exclude: (?=third_party).*(\.py)$
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.0.1
+    hooks:
+      - id: forbid-crlf
+        files: \.md$
+      - id: remove-crlf
+        files: \.md$
+      - id: forbid-tabs
+        files: \.md$
+      - id: remove-tabs
+        files: \.md$
+  - repo: local
+    hooks:
+      - id: clang-format
+        name: clang-format
+        description: Format files with ClangFormat
+        entry: bash .pre-commit-hooks/clang-format.hook -i
+        language: system
+        files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx|cuh|proto)$
+        exclude: (?=speechx/speechx/kaldi|speechx/patch|speechx/tools/fstbin|speechx/tools/lmbin).*(\.cpp|\.cc|\.h|\.py)$
+    #-   id: copyright_checker
+    #    name: copyright_checker
+    #    entry: python .pre-commit-hooks/copyright-check.hook
+    #    language: system
+    #    files: \.(c|cc|cxx|cpp|cu|h|hpp|hxx|proto|py)$
+    #    exclude: (?=third_party|pypinyin|speechx/speechx/kaldi|speechx/patch|speechx/tools/fstbin|speechx/tools/lmbin).*(\.cpp|\.cc|\.h|\.py)$
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.4.0
+    hooks:
+      - id: reorder-python-imports
+        exclude: (?=third_party).*(\.py)$
