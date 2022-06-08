@@ -46,7 +46,6 @@ def q_object(request):
         )
     except Exception as ex:
         raise APIException(ex)
-
     print(color.OKGREEN + "------------------- SQL -----------------" + color.ENDC)
     print(songs.query)
 
@@ -61,13 +60,10 @@ def sub_query(request):
             Song.objects.values().filter(albums_id__in=album_sub_query).order_by("-id")
         )
         print(songs.query)
-
     except Exception as ex:
         raise APIException(ex)
-
     print(color.OKGREEN + "------------------- SQL -----------------" + color.ENDC)
     print(songs.query)
-
     return Response(songs)
 
 
@@ -89,7 +85,6 @@ def sub_query_limit(request):
                     },...
                 ]
     """
-
     try:
         albums = (
             Album.objects.filter(
@@ -115,7 +110,6 @@ def sub_query_limit(request):
 
     except Exception as ex:
         raise APIException(ex)
-
     # albums = list(Album.objects.all().prefetch_related('songs'))
     #
     # albums_res = []
