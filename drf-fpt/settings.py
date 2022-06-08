@@ -82,23 +82,23 @@ WSGI_APPLICATION = 'drf-fpt.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'demo',
-#         'USER': 'nguyendd5',
-#         'PASSWORD': 'nguyendd5',
-#         'HOST': 'localhost',
-#         'PORT': '3306',
-#     }
-# }
-#
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'demo',
+        'USER': 'root',
+        'PASSWORD': 'Damtieuthuyen123@',
+        'HOST': 'localhost',
+        'PORT': '3306',
     }
 }
+# #
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
