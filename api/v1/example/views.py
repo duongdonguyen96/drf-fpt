@@ -28,7 +28,6 @@ def greate_than(request):
         raise APIException(ex)
     except Exception as ex:
         raise APIException(ex)
-
     return Response(songs)
 
 
@@ -44,7 +43,6 @@ def q_object(request):
     print(color.OKGREEN + "------------------- SQL -----------------" +
           color.ENDC)
     print(songs.query)
-
     return Response(list(songs.values("id", "name")))
 
 
