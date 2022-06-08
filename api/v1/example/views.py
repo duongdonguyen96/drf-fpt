@@ -202,6 +202,7 @@ def when_then(request):
 
 @api_view(["GET"])
 def f(request):
+    name = "nguyen"
     try:
         song = Song.objects.get(id=4)
     except Exception as ex:
