@@ -44,8 +44,8 @@
 │   ├── albums
 │   ├── singer
 │   ├── songs
-│   │   ├── views
-│   │   └── views
+│   │   ├── init
+│   │   └── model
 │   ├── base model
 │   └──  migrations
 │
