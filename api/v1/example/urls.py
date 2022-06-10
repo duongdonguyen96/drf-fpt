@@ -1,4 +1,5 @@
 from django.urls import path
+
 from api.v1.example import views
 
 urlpatterns = [
@@ -10,8 +11,10 @@ urlpatterns = [
     path('aggregate/', views.aggregate, name='aggregate'),
     path('when_then/', views.when_then, name='when_then'),
     path('f/', views.f, name='f'),
-
-    # path('greate_than/', views.greate_than, name='greate_than'),
-    # path('list/', views.get_all, name='song-list'),
-
+    path('exact/', views.exact, name='exact'),
+    path('contains/', views.contains, name='contains'),
+    path('starts_with/', views.starts_with, name='starts_with'),
+    path('range/', views.range, name='range'),
+    path('year/', views.year, name='year'),
+    path('exits/', views.exits, name='exits'),
 ]

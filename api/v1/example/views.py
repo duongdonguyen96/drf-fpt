@@ -1,6 +1,7 @@
 from django.db.models import Case
 from django.db.models import CharField
 from django.db.models import Count
+from django.db.models import Exists
 from django.db.models import F
 from django.db.models import Max
 from django.db.models import Min
@@ -15,6 +16,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 
 from core.albums.models import Album
+from core.singer.models import Singer
 from core.songs.models import Song
 from funtions.color_text import color
 from funtions.funtion import query_debugger
@@ -214,28 +216,136 @@ def f(request):
     })
 
 
-# @api_view(['GET'])
-# def get_all(request):
-#     songs = Song.objects.filter(albums=OuterRef('pk')).only('pk')
-#     data = Album.objects.annotate(song=Subquery(songs.values('id')[:1]))
-#     print(data.query)
-#     data = list(data.values())
-#
-#     print(type(data))
-#     return JsonResponse(data, safe=False)
+@api_view(["GET"])
+def exact(request):
+    try:
+        data = Singer.objects.filter(stage_name__exact='NoO')
 
-# try:
-#     songs = Song.objects.all()
-# except Exception as ex:
-#     raise APIException(ex)
-#
-# serializer = SongResponseSerializers(songs, many=True)
-#
-# print(color.WARNING + "---------RAW SQL----------" + color.ENDC)
-# print(songs.query)
-# print(color.WARNING + "-----------" + color.ENDC)
+    except Exception as ex:
+        raise APIException(ex)
+    print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+    print(data.query)
+    data = list(data.values("id", "name", "stage_name"))
 
-# albums = Album.objects.filter(songs__in=Song.objects.order_by('-id')[:5])
+    return Response(data)
 
-# songs = Song.objects.order_by('-id')[:5]
-# albums = Album.objects.filter(songs__in=songs)
+
+@api_view(["GET"])
+def contains(request):
+    try:
+        data = Singer.objects.filter(stage_name__icontains='oO')
+
+    except Exception as ex:
+        raise APIException(ex)
+    print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+    print(data.query)
+    data = list(data.values("id", "name", "stage_name"))
+
+    return Response(data)
+
+
+@api_view(["GET"])
+def starts_with(request):
+    try:
+        data = Singer.objects.filter(stage_name__startswith='N')
+
+    except Exception as ex:
+        raise APIException(ex)
+    print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+    print(data.query)
+    data = list(data.values("id", "name", "stage_name"))
+
+    return Response(data)
+
+
+@api_view(["GET"])
+def range(request):
+    try:
+        data = Singer.objects.filter(id__range=(1, 3))
+
+    except Exception as ex:
+        raise APIException(ex)
+    print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+    print(data.query)
+    data = list(data.values("id", "name", "stage_name"))
+
+    return Response(data)
+
+
+@api_view(["GET"])
+def year(request):
+    try:
+        data = Singer.objects.filter(created_at__year=2022)
+
+    except Exception as ex:
+        raise APIException(ex)
+    print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+    print(data.query)
+    data = list(data.values("id", "name", "stage_name"))
+
+    return Response(data)
+
+
+@api_view(["GET"])
+def exits(request):
+    try:
+        sub = Album.objects.filter(
+            singers=OuterRef('pk'), created_at__year__gte=2023)
+        data = Singer.objects.all().annotate(exits=Exists(sub))
+        print(data.query)
+        print(type(data))
+        print(data)
+        data_list = list(data.values())
+
+    except Exception as ex:
+        raise APIException(ex)
+    # print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+    # print(data.query)
+    # data = list(data.values("id", "name", "stage_name"))
+
+    return Response(data_list)
+
+
+# @api_view(["GET"])
+# def exits(request):
+#     try:
+#         sub = Album.objects.filter(
+#             singers=OuterRef('pk'),
+#             created_at__year__gte=2023
+#         )
+#         data = Singer.objects.all().annotate(exits=Exists(sub))
+#         print(data.query)
+#         print(type(data))
+#         print(data)
+#         data_list = list(data.values())
+#
+#     except Exception as ex:
+#         raise APIException(ex)
+#     # print(color.OKGREEN + "-------------- SQL --------------" + color.ENDC)
+#     # print(data.query)
+#     # data = list(data.values("id", "name", "stage_name"))
+#
+#     return Response(data_list)
+
+#
+# @api_view(["GET"])
+# def exac3t(request):
+#     try:
+#     # song = Song.objects.get(id=4)
+#     except Exception as ex:
+#         raise APIException(ex)
+#
+#     return Response({
+#         "hello"
+#     }) @ api_view(["GET"])
+#
+#
+# def exac2t(request):
+#     try:
+#     # song = Song.objects.get(id=4)
+#     except Exception as ex:
+#         raise APIException(ex)
+#
+#     return Response({
+#         "hello"
+#     })
