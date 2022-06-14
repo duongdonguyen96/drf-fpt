@@ -4,3 +4,4 @@
  pip install mysqlclient
  pip install django-debug-toolbar
  pip install pre-commit #https://pre-commit.com/
+ pip install pika

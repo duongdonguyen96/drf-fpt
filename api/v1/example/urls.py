@@ -17,4 +17,6 @@ urlpatterns = [
     path('range/', views.range, name='range'),
     path('year/', views.year, name='year'),
     path('exits/', views.exits, name='exits'),
+    path('callback/', views.callback, name='callback'),
+    path('publish/', views.publish, name='publish'),
 ]
