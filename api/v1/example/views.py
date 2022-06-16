@@ -1,6 +1,3 @@
-import json
-
-import pika
 from django.db.models import Case
 from django.db.models import CharField
 from django.db.models import Count
@@ -23,15 +20,15 @@ from core.singer.models import Singer
 from core.songs.models import Song
 from funtions.color_text import color
 from funtions.funtion import query_debugger
-from funtions.rabbit_mq import publish_base
+# from funtions.rabbit_mq import publish_base
 
-connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
-channel = connection.channel()
-channel.queue_declare(queue='demo_1')
-# channel.exchange_declare(
-#     exchange='demo_1',
-#     exchange_type='direct'
-# )
+# connection = pika.BlockingConnection(pika.ConnectionParameters('localhost'))
+# channel = connection.channel()
+# channel.queue_declare(queue='demo_1')
+# # channel.exchange_declare(
+# #     exchange='demo_1',
+# #     exchange_type='direct'
+# # )
 
 
 @api_view(["GET"])
@@ -318,36 +315,37 @@ def exits(request):
     return Response(data_list)
 
 
-@api_view(["GET"])
-def publish(ch):
-    try:
-        print('____________________________')
-        data = {"id": 1, "name": 'duong do nguyen', "age": 26}
-        publish_base('demo_1', data)
-        response = color.OKGREEN + "________published__________" + color.ENDC
-        print(response)
-
-    except Exception as ex:
-        print("CHET TOI")
-        raise APIException(ex)
-
-    return Response("Pushed")
-
-
-@api_view(["GET"])
-def callback():
-    def notify(ch, properties, body):
-
-        print("Received in likes...")
-        print(body)
-        print('____________________________')
-        data = json.loads(body)
-        print(data)
-        try:
-            if properties.contype == "demo_1":
-                return Response("data_list")
-
-        except Exception as ex:
-            raise APIException(ex)
-
-        return Response("data_list")
+#
+# @api_view(["GET"])
+# def publish(ch):
+#     try:
+#         print('____________________________')
+#         data = {"id": 1, "name": 'duong do nguyen', "age": 26}
+#         publish_base('demo_1', data)
+#         response = color.OKGREEN + "________published__________" + color.ENDC
+#         print(response)
+#
+#     except Exception as ex:
+#         print("CHET TOI")
+#         raise APIException(ex)
+#
+#     return Response("Pushed")
+#
+#
+# @api_view(["GET"])
+# def callback():
+#     def notify(ch, properties, body):
+#
+#         print("Received in likes...")
+#         print(body)
+#         print('____________________________')
+#         data = json.loads(body)
+#         print(data)
+#         try:
+#             if properties.contype == "demo_1":
+#                 return Response("data_list")
+#
+#         except Exception as ex:
+#             raise APIException(ex)
+#
+#         return Response("data_list")

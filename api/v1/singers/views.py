@@ -1,16 +1,17 @@
+from django.db import connection
+from django.db.models import F
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
 
-from api.v1.singers.serializers import SingerResponseSerializers, SingerCreateSerializers, SingerUpdateSerializers
+from api.v1.singers.serializers import SingerCreateSerializers
+from api.v1.singers.serializers import SingerResponseSerializers
+from api.v1.singers.serializers import SingerUpdateSerializers
 from core.albums.models import Album
+from core.singer.models import Singer
 from funtions import message
 from funtions.color_text import color
-from core.singer.models import Singer
-from django.db.models import F
-from django.db import connection
-
 from funtions.funtion import dict_fetchall
 
 
@@ -23,9 +24,11 @@ def get_all(request):
 
     serializer = SingerResponseSerializers(singers, many=True)
 
-    print(color.WARNING + "-------------------RAW SQL-----------------" + color.ENDC)
+    print(color.WARNING + "-------------------RAW SQL-----------------" +
+          color.ENDC)
     print(singers.query)
-    print(color.WARNING + "-------------------------------------------" + color.ENDC)
+    print(color.WARNING + "-------------------------------------------" +
+          color.ENDC)
 
     return Response(serializer.data)
 
@@ -58,7 +61,11 @@ def create(request):
         raise APIException(message.ERROR_STAGE_NAME_IS_EXISTED)
 
     try:
-        singer = Singer.objects.create(name=name, stage_name=stage_name, birthday=birthday, address=address)
+        singer = Singer.objects.create(
+            name=name,
+            stage_name=stage_name,
+            birthday=birthday,
+            address=address)
     except Exception as ex:
         raise APIException(ex)
 
@@ -69,8 +76,45 @@ def create(request):
         "birthday": singer.birthday,
         "address": singer.address,
         "created_at": singer.created_at,
-        "updated_at": singer.created_at,
+        "updated_at": singer.updated_at,
     })
+
+
+@api_view(['POST'])
+def bulk_create(request):
+    data = [{
+        "name": "Lam Trường",
+        "stage_name": "Anh Ba",
+        "birthday": "2000-12-12",
+        "address": "HCM",
+    }, {
+        "name": "Đan Trường",
+        "stage_name": "Anh Hai",
+        "birthday": "2000-12-12",
+        "address": "HCM",
+    }, {
+        "name": "Đỗ Nguyên",
+        "stage_name": "Anh Hai",
+        "birthday": "2000-12-12",
+        "address": "HCM",
+    }]
+
+    try:
+        singers = list(
+            Singer.objects.bulk_create(Singer(**item) for item in data))
+        print(type(singers))
+    except Exception as ex:
+        raise APIException(ex)
+
+    data_response = [{
+        "id": item.id,
+        "name": item.name,
+        "stage_name": item.stage_name,
+        "created_at": item.created_at,
+        "updated_at": item.updated_at,
+    } for item in singers]
+
+    return Response(data_response)
 
 
 @api_view(['POST'])
@@ -123,15 +167,17 @@ def get_list_albums(request, singer_id):
         data = Album.objects.all().filter(singers__id=singer_id).annotate(
             singer_name=F('singers__name'),
             singer_id=F('singers__id'),
-            album_name=F('name')
-        ).order_by('-id').values('album_name', 'singer_name', 'singer_id')
+            album_name=F('name')).order_by('-id').values(
+                'album_name', 'singer_name', 'singer_id')
 
     except Exception as ex:
         raise APIException(ex)
 
-    print(color.WARNING + "-------------------RAW SQL-----------------" + color.ENDC)
+    print(color.WARNING + "-------------------RAW SQL-----------------" +
+          color.ENDC)
     print(data.query)
-    print(color.WARNING + "-------------------------------------------" + color.ENDC)
+    print(color.WARNING + "-------------------------------------------" +
+          color.ENDC)
 
     return Response(data)
 
@@ -141,11 +187,9 @@ def get_list_songs(request, singer_id):
     """
     Lấy danh sách bài hát của 1 ca sĩ
     """
-    # TODO prefetch_related
-    # response = Singer.objects.prefetch_related('album_set').all()
-    # ModelA.objects.prefetch_related('modelb_set').all()
 
-    sql = """SELECT SONG.ID AS song_id,SONG.NAME as song_name,SINGER.ID,SINGER.NAME  FROM SINGER
+    sql = """ SELECT SONG.ID AS song_id,SONG.NAME as song_name,SINGER.ID,SINGER.NAME
+            FROM SINGER
             INNER JOIN ALBUM ON ("ALBUM"."SINGERS_ID" = "SINGER"."ID")
             INNER JOIN SONG ON ("SONG"."ALBUMS_ID" = "ALBUM"."ID")
             WHERE SINGER.ID =%s""" % singer_id
@@ -177,33 +221,36 @@ def search_data(request):
         raise APIException(message.DATA_IS_NOT_NONE)
 
     try:
-        singers = Singer.objects.all().filter(name__icontains=data_search).values('id', 'name')[:5]
+        singers = Singer.objects.all().filter(
+            name__icontains=data_search).values('id', 'name')[:5]
 
-        albums = Album.objects.all().filter(name__icontains=data_search).select_related('singers').annotate(
-            album_name=F('name'),
-            singer_name=F('singers__name'),
-            singer_id=F('singers__id'),
-        ).values('album_name', 'singer_name', 'singer_id')[:5]
+        albums = Album.objects.all().filter(
+            name__icontains=data_search).select_related('singers').annotate(
+                album_name=F('name'),
+                singer_name=F('singers__name'),
+                singer_id=F('singers__id'),
+            ).values('album_name', 'singer_name', 'singer_id')[:5]
 
-        songs = Album.objects.all().filter(songs__name__icontains=data_search).select_related('singers').annotate(
-            singer_id=F('singers__id'),
-            singer_name=F('singers__name'),
-            song_id=F('songs__id'),
-            song_name=F('songs__name'),
-        ).values('singer_id', 'singer_name', 'song_id', 'song_name')[:5]
+        songs = Album.objects.all().filter(
+            songs__name__icontains=data_search).select_related(
+                'singers').annotate(
+                    singer_id=F('singers__id'),
+                    singer_name=F('singers__name'),
+                    song_id=F('songs__id'),
+                    song_name=F('songs__name'), ).values(
+                        'singer_id', 'singer_name', 'song_id', 'song_name')[:5]
 
     except Exception as ex:
         raise APIException(ex)
 
-    print(color.OKGREEN + "-------------------SINGER-----------------" + color.ENDC)
+    print(color.OKGREEN + "-------------------SINGER-----------------" +
+          color.ENDC)
     print(singers.query)
-    print(color.WARNING + "-------------------ALBUM------------------" + color.ENDC)
+    print(color.WARNING + "-------------------ALBUM------------------" +
+          color.ENDC)
     print(albums.query)
-    print(color.OKBLUE + "--------------------SONG-------------------" + color.ENDC)
+    print(color.OKBLUE + "--------------------SONG-------------------" +
+          color.ENDC)
     print(songs.query)
 
-    return Response(
-        {'songs': songs,
-         "albums": albums,
-         "singers": singers
-         })
+    return Response({'songs': songs, "albums": albums, "singers": singers})
